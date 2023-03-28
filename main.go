@@ -4,10 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/zqddong/learnku-blog/bootstrap"
 	"github.com/zqddong/learnku-blog/pkg/database"
 	"github.com/zqddong/learnku-blog/pkg/logger"
-	"github.com/zqddong/learnku-blog/pkg/route"
-	"github.com/zqddong/learnku-blog/pkg/types"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -18,39 +17,6 @@ import (
 
 var router *mux.Router
 var db *sql.DB
-
-//func initDB() {
-//	var err error
-//	config := mysql.Config{
-//		User:                 "sail",
-//		Passwd:               "password",
-//		Addr:                 "127.0.0.1:3306",
-//		Net:                  "tcp",
-//		DBName:               "learnku_blog",
-//		AllowNativePasswords: true,
-//	}
-//
-//	// 准备数据库连接池
-//	db, err = sql.Open("mysql", config.FormatDSN())
-//	logger.LogError(err)
-//
-//	// 设置最大连接数
-//	db.SetMaxOpenConns(25)
-//	// 设置最大空闲连接数
-//	db.SetMaxIdleConns(25)
-//	// 设置每个链接的过期时间
-//	db.SetConnMaxLifetime(5 * time.Minute)
-//
-//	// 尝试连接，失败会报错
-//	err = db.Ping()
-//	logger.LogError(err)
-//}
-
-//func checkError(err error) {
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")
@@ -109,39 +75,39 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 //	return strconv.FormatInt(num, 10)
 //}
 
-func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
-
-	// 2. 读取对应的文章数据
-	article, err := getArticleByID(id)
-
-	// 3. 如果出现错误
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// 3.1 数据未找到
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 文章未找到")
-		} else {
-			// 3.2 数据库错误
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
-	} else {
-		// 4. 读取成功
-		tmpl, err := template.New("show.gohtml").
-			Funcs(template.FuncMap{
-				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
-			}).
-			ParseFiles("resources/views/articles/show.gohtml")
-		logger.LogError(err)
-
-		err = tmpl.Execute(w, article)
-		logger.LogError(err)
-	}
-}
+//func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
+//	// 1. 获取 URL 参数
+//	id := getRouteVariable("id", r)
+//
+//	// 2. 读取对应的文章数据
+//	article, err := getArticleByID(id)
+//
+//	// 3. 如果出现错误
+//	if err != nil {
+//		if err == sql.ErrNoRows {
+//			// 3.1 数据未找到
+//			w.WriteHeader(http.StatusNotFound)
+//			fmt.Fprint(w, "404 文章未找到")
+//		} else {
+//			// 3.2 数据库错误
+//			logger.LogError(err)
+//			w.WriteHeader(http.StatusInternalServerError)
+//			fmt.Fprint(w, "500 服务器内部错误")
+//		}
+//	} else {
+//		// 4. 读取成功
+//		tmpl, err := template.New("show.gohtml").
+//			Funcs(template.FuncMap{
+//				"RouteName2URL": route.Name2URL,
+//				"Int64ToString": types.Int64ToString,
+//			}).
+//			ParseFiles("resources/views/articles/show.gohtml")
+//		logger.LogError(err)
+//
+//		err = tmpl.Execute(w, article)
+//		logger.LogError(err)
+//	}
+//}
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT * FROM articles")
@@ -232,7 +198,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -268,7 +234,7 @@ func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	_, err := getArticleByID(id)
@@ -336,7 +302,7 @@ func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -461,10 +427,10 @@ func saveArticleToDB(title string, body string) (int64, error) {
 	return 0, err
 }
 
-//func getRouteVariable(parameterName string, r *http.Request) string {
-//	vars := mux.Vars(r)
-//	return vars[parameterName]
-//}
+func getRouteVariable(parameterName string, r *http.Request) string {
+	vars := mux.Vars(r)
+	return vars[parameterName]
+}
 
 func getArticleByID(id string) (Article, error) {
 	article := Article{}
@@ -477,17 +443,16 @@ func main() {
 	//initDB()
 	database.Initialize()
 	db = database.DB
-	//createTables()
 
-	route.Initialize()
-	router = route.Router
+	//route.Initialize()
+	router = bootstrap.SetupRoute()
 
 	// 重构：使用 gorilla/mux 重写路由
 	//router := mux.NewRouter()
 	//router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	//router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 
-	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
+	//router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
