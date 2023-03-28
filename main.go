@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"github.com/zqddong/learnku-blog/pkg/route"
 	"log"
 	"strconv"
 	"time"
@@ -16,7 +17,7 @@ import (
 	"unicode/utf8"
 )
 
-var router = mux.NewRouter()
+var router *mux.Router
 var db *sql.DB
 
 func initDB() {
@@ -95,15 +96,15 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 	return 0, nil
 }
 
-func RouteName2URL(routeName string, pairs ...string) string {
-	url, err := router.Get(routeName).URL(pairs...)
-	if err != nil {
-		checkError(err)
-		return ""
-	}
-
-	return url.String()
-}
+//func RouteName2URL(routeName string, pairs ...string) string {
+//	url, err := router.Get(routeName).URL(pairs...)
+//	if err != nil {
+//		checkError(err)
+//		return ""
+//	}
+//
+//	return url.String()
+//}
 
 func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
@@ -132,7 +133,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 		// 4. 读取成功
 		tmpl, err := template.New("show.gohtml").
 			Funcs(template.FuncMap{
-				"RouteName2URL": RouteName2URL,
+				"RouteName2URL": route.Name2URL,
 				"Int64ToString": Int64ToString,
 			}).
 			ParseFiles("resources/views/articles/show.gohtml")
@@ -476,6 +477,10 @@ func getArticleByID(id string) (Article, error) {
 func main() {
 	initDB()
 	//createTables()
+
+	route.Initialize()
+	router = route.Router
+
 	// 重构：使用 gorilla/mux 重写路由
 	//router := mux.NewRouter()
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
