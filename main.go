@@ -1,8 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
+	"log"
+	"time"
+
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
@@ -10,6 +14,37 @@ import (
 	"strings"
 	"unicode/utf8"
 )
+
+var router = mux.NewRouter()
+var db *sql.DB
+
+func initDB() {
+	var err error
+	config := mysql.Config{
+		User:                 "sail",
+		Passwd:               "password",
+		Addr:                 "127.0.0.1:3306",
+		Net:                  "tcp",
+		DBName:               "learnku_blog",
+		AllowNativePasswords: true,
+	}
+
+	db, err := sql.Open("mysql", config.FormatDSN())
+	checkError(err)
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = db.Ping()
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello, 欢迎来到 goblog！</h1>")
@@ -129,9 +164,8 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 	})
 }
 
-var router = mux.NewRouter()
-
 func main() {
+	initDB()
 	// 重构：使用 gorilla/mux 重写路由
 	//router := mux.NewRouter()
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
