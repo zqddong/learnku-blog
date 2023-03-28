@@ -142,28 +142,28 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 //	}
 //}
 
-func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT * FROM articles")
-	logger.LogError(err)
-	defer rows.Close()
-
-	var articles []Article
-	for rows.Next() {
-		var article Article
-		err := rows.Scan(&article.ID, &article.Title, &article.Body)
-		logger.LogError(err)
-		articles = append(articles, article)
-	}
-
-	err = rows.Err()
-	logger.LogError(err)
-
-	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
-	logger.LogError(err)
-
-	tmpl.Execute(w, articles)
-	logger.LogError(err)
-}
+//func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
+//	rows, err := db.Query("SELECT * FROM articles")
+//	logger.LogError(err)
+//	defer rows.Close()
+//
+//	var articles []Article
+//	for rows.Next() {
+//		var article Article
+//		err := rows.Scan(&article.ID, &article.Title, &article.Body)
+//		logger.LogError(err)
+//		articles = append(articles, article)
+//	}
+//
+//	err = rows.Err()
+//	logger.LogError(err)
+//
+//	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+//	logger.LogError(err)
+//
+//	tmpl.Execute(w, articles)
+//	logger.LogError(err)
+//}
 
 // ArticlesFormData 创建博文表单数据
 type ArticlesFormData struct {
@@ -487,7 +487,7 @@ func main() {
 	//router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 
 	//router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
-	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
+	//router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
 	router.HandleFunc("/articles/{id:[0-9]+}/edit", articlesEditHandler).Methods("GET").Name("articles.edit")
