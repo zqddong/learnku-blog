@@ -36,7 +36,8 @@ func (article *Article) Create() (err error) {
 
 // Update 更新文章
 func (article *Article) Update() (rowsAffected int64, err error) {
-	result := model.DB.Save(&article)
+	//result := model.DB.Save(&article) // 不修改 Save执行 会 UPDATE 后在执行INSERT 没整明白原因
+	result := model.DB.Updates(article)
 	if err = result.Error; err != nil {
 		logger.LogError(err)
 		return 0, err
