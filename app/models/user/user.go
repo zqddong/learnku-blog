@@ -1,6 +1,9 @@
 package user
 
-import "github.com/zqddong/learnku-blog/app/models"
+import (
+	"github.com/zqddong/learnku-blog/app/models"
+	"github.com/zqddong/learnku-blog/pkg/password"
+)
 
 type User struct {
 	models.BaseModel
@@ -20,6 +23,7 @@ type User struct {
 	PasswordConfirm string `gorm:"-" valid:"password_confirm"`
 }
 
-func (u *User) ComparePassword(password string) bool {
-	return u.Password == password
+// ComparePassword 对比密码是否匹配
+func (user *User) ComparePassword(_password string) bool {
+	return password.CheckHash(_password, user.Password)
 }

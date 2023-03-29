@@ -1,12 +1,23 @@
 package tests
 
 import (
+	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCheckPassword(t *testing.T) {
+	password := "123456"
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
+	fmt.Println(string(bytes))
+
+	err := bcrypt.CompareHashAndPassword([]byte(bytes), []byte(password))
+	fmt.Println(err)
+}
 
 func TestHomePage(t *testing.T) {
 	baseURL := "http://localhost:3000"
