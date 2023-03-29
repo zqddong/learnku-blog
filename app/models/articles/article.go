@@ -1,12 +1,15 @@
 package articles
 
 import (
+	"github.com/zqddong/learnku-blog/app/models"
 	"github.com/zqddong/learnku-blog/pkg/route"
 	"strconv"
 )
 
 type Article struct {
-	ID    uint64
+	models.BaseModel
+
+	//ID    uint64
 	Title string
 	Body  string
 }
