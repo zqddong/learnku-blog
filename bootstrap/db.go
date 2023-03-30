@@ -26,7 +26,7 @@ func SetupDB() {
 	sqlDB.SetConnMaxLifetime(time.Duration(config.GetInt("database.mysql.max_life_seconds")) * time.Second)
 
 	// 创建和维护数据表结构
-	//migration(db)
+	migration(db)
 }
 
 func migration(db *gorm.DB) {
