@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/zqddong/learnku-blog/app/models"
 	"github.com/zqddong/learnku-blog/pkg/password"
+	"github.com/zqddong/learnku-blog/pkg/route"
 )
 
 type User struct {
@@ -29,6 +30,7 @@ func (user *User) ComparePassword(_password string) bool {
 }
 
 // Link 方法用来生成用户链接
-func (user *User) Link() string {
-	return ""
+// Link 方法用来生成用户链接
+func (user User) Link() string {
+	return route.Name2URL("users.show", "id", user.GetStringID())
 }
