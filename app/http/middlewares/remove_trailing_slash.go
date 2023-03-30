@@ -6,6 +6,7 @@ import (
 )
 
 // RemoveTrailingSlash 除首页以外，移除所有请求路径后面的斜杆
+// 全局中间件
 func RemoveTrailingSlash(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. 除首页以外，移除所有请求路径后面的斜杆

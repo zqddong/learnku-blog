@@ -20,5 +20,5 @@ func main() {
 	// 初始化路由绑定
 	router := bootstrap.SetupRoute()
 
-	http.ListenAndServe(":"+c.GetString("app.port"), middlewares.RemoveTrailingSlash(router))
+	http.ListenAndServe("localhost:"+c.GetString("app.port"), middlewares.RemoveTrailingSlash(router))
 }

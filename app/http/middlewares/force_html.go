@@ -3,6 +3,7 @@ package middlewares
 import "net/http"
 
 // ForceHTML 强制标头返回 HTML 内容类型
+// 全局中间件
 func ForceHTML(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. 设置标头

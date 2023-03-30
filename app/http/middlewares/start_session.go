@@ -6,6 +6,7 @@ import (
 )
 
 // StartSession 开启 session 会话控制
+// 全局中间件
 func StartSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
