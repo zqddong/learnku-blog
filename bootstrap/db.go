@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"github.com/zqddong/learnku-blog/app/models/articles"
+	"github.com/zqddong/learnku-blog/app/models/category"
 	"github.com/zqddong/learnku-blog/app/models/user"
 	"github.com/zqddong/learnku-blog/pkg/config"
 	"github.com/zqddong/learnku-blog/pkg/model"
@@ -26,7 +27,7 @@ func SetupDB() {
 	sqlDB.SetConnMaxLifetime(time.Duration(config.GetInt("database.mysql.max_life_seconds")) * time.Second)
 
 	// 创建和维护数据表结构
-	migration(db)
+	//migration(db)
 }
 
 func migration(db *gorm.DB) {
@@ -34,5 +35,6 @@ func migration(db *gorm.DB) {
 	db.AutoMigrate(
 		&user.User{},
 		&articles.Article{},
+		&category.Category{},
 	)
 }

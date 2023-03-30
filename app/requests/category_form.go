@@ -2,27 +2,22 @@ package requests
 
 import (
 	"github.com/thedevsaddam/govalidator"
-	"github.com/zqddong/learnku-blog/app/models/articles"
+	"github.com/zqddong/learnku-blog/app/models/category"
 )
 
-func ValidateArticleForm(data articles.Article) map[string][]string {
+func ValidateCategoryForm(data category.Category) map[string][]string {
 
 	// 1. 定制认证规则
 	rules := govalidator.MapData{
-		"title": []string{"required", "min_cn:3", "max_cn:40"},
-		"body":  []string{"required", "min_cn:10"},
+		"name": []string{"required", "min_cn:2", "max_cn:10", "not_exists:categories,name"},
 	}
 
 	// 2. 定制错误消息
 	messages := govalidator.MapData{
-		"title": []string{
-			"required:标题为必填项",
-			"min_cn:标题长度需大于 3",
-			"max_cn:标题长度需小于 40",
-		},
-		"body": []string{
-			"required:文章内容为必填项",
-			"min_cn:长度需大于 10",
+		"name": []string{
+			"required:分类名称为必填项",
+			"min_cn:分类名称长度需至少 2 个字",
+			"max_cn:分类名称长度不能超过 8 个字",
 		},
 	}
 
