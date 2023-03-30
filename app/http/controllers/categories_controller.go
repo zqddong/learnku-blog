@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/zqddong/learnku-blog/app/models/articles"
 	"github.com/zqddong/learnku-blog/app/models/category"
 	"github.com/zqddong/learnku-blog/app/requests"
+	"github.com/zqddong/learnku-blog/pkg/config"
 	"github.com/zqddong/learnku-blog/pkg/flash"
 	"github.com/zqddong/learnku-blog/pkg/route"
 	"github.com/zqddong/learnku-blog/pkg/view"
@@ -51,6 +53,26 @@ func (*CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 }
 
 // Show 显示分类下的文章列表
-func (*CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
-	//
+func (cc *CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
+
+	// 1. 获取 URL 参数
+	id := route.GetRouteVariable("id", r)
+
+	// 2. 读取对应的数据
+	_category, err := category.Get(id)
+
+	// 3. 获取结果集
+	articles, pagerData, err := articles.GetByCategoryID(
+		_category.GetStringID(), r, config.GetInt("perpage"))
+
+	if err != nil {
+		cc.ResponseForSQLError(w, err)
+	} else {
+
+		// ---  2. 加载模板 ---
+		view.Render(w, view.D{
+			"Articles":  articles,
+			"PagerData": pagerData,
+		}, "articles.index", "articles._article_meta")
+	}
 }
