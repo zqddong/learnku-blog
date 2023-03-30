@@ -3,7 +3,10 @@ package articles
 import (
 	"github.com/zqddong/learnku-blog/pkg/logger"
 	"github.com/zqddong/learnku-blog/pkg/model"
+	"github.com/zqddong/learnku-blog/pkg/pagination"
+	"github.com/zqddong/learnku-blog/pkg/route"
 	"github.com/zqddong/learnku-blog/pkg/types"
+	"net/http"
 )
 
 func Get(idStr string) (Article, error) {
@@ -16,12 +19,29 @@ func Get(idStr string) (Article, error) {
 	return article, nil
 }
 
-func GetAll() ([]Article, error) {
+//func GetAll() ([]Article, error) {
+//	var articles []Article
+//	if err := model.DB.Preload("User").Find(&articles).Error; err != nil {
+//		return articles, err
+//	}
+//	return articles, nil
+//}
+
+// GetAll 获取全部文章
+func GetAll(r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+
+	// 1. 初始化分页实例
+	db := model.DB.Model(Article{}).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("home"), perPage)
+
+	// 2. 获取视图数据
+	viewData := _pager.Paging()
+
+	// 3. 获取数据
 	var articles []Article
-	if err := model.DB.Preload("User").Find(&articles).Error; err != nil {
-		return articles, err
-	}
-	return articles, nil
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
 }
 
 // Create 创建文章，通过 article.ID 来判断是否创建成功

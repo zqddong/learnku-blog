@@ -6,6 +6,7 @@ import (
 	"github.com/zqddong/learnku-blog/app/policies"
 	"github.com/zqddong/learnku-blog/app/requests"
 	"github.com/zqddong/learnku-blog/pkg/auth"
+	"github.com/zqddong/learnku-blog/pkg/config"
 	"github.com/zqddong/learnku-blog/pkg/route"
 	"github.com/zqddong/learnku-blog/pkg/view"
 	"net/http"
@@ -42,7 +43,7 @@ func (ac *ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 func (ac *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 	// 1. 获取结果集
-	articles, err := articles.GetAll()
+	articles, pagerData, err := articles.GetAll(r, config.GetInt("perpage"))
 
 	if err != nil {
 		ac.ResponseForSQLError(w, err)
@@ -50,7 +51,8 @@ func (ac *ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 		// ---  2. 加载模板 ---
 		view.Render(w, view.D{
-			"Articles": articles,
+			"Articles":  articles,
+			"PagerData": pagerData,
 		}, "articles.index", "articles._article_meta")
 	}
 }
