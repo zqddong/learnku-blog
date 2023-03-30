@@ -6,6 +6,7 @@ import (
 	"github.com/zqddong/learnku-blog/bootstrap"
 	"github.com/zqddong/learnku-blog/config"
 	c "github.com/zqddong/learnku-blog/pkg/config"
+	"github.com/zqddong/learnku-blog/pkg/logger"
 	"net/http"
 )
 
@@ -14,6 +15,9 @@ import (
 //go:embed resources/views/categories/*
 //go:embed resources/views/layouts/*
 var tplFS embed.FS
+
+//go:embed public/*
+var staticFS embed.FS
 
 func init() {
 	// 初始化配置信息
@@ -29,7 +33,8 @@ func main() {
 	bootstrap.SetupTemplate(tplFS)
 
 	// 初始化路由绑定
-	router := bootstrap.SetupRoute()
+	router := bootstrap.SetupRoute(staticFS)
 
-	http.ListenAndServe("localhost:"+c.GetString("app.port"), middlewares.RemoveTrailingSlash(router))
+	err := http.ListenAndServe(":"+c.GetString("app.port"), middlewares.RemoveTrailingSlash(router))
+	logger.LogError(err)
 }
